@@ -1,86 +1,56 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Badres Prime: O Jogo</title>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-body{background:#000;overflow:hidden;font-family:Arial,sans-serif}
-#gc{width:100vw;height:100vh;position:relative;overflow:hidden}
+body{background:#000;overflow:hidden}
+#gc{width:100vw;height:100vh;position:relative;overflow:hidden;font-family:Arial,sans-serif}
 canvas#bgc{position:absolute;inset:0;width:100%;height:100%}
 .scr{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .gone{display:none!important}
-.title{font-size:clamp(28px,5vw,54px);font-weight:900;color:#FFD700;letter-spacing:4px;text-align:center;text-shadow:0 0 30px rgba(255,215,0,.7)}
-.sub{font-size:clamp(9px,1.5vw,12px);color:#888;letter-spacing:6px;text-align:center;margin-bottom:6px}
-.mb{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,215,0,.35);color:#FFD700;
-    font-size:clamp(12px,2vw,16px);padding:11px 0;border-radius:5px;cursor:pointer;
-    width:230px;letter-spacing:2px;transition:.18s}
+.title{font-size:clamp(26px,5vw,52px);font-weight:900;color:#FFD700;letter-spacing:4px;text-align:center;filter:drop-shadow(0 0 20px rgba(255,215,0,.6))}
+.sub{font-size:clamp(9px,1.5vw,12px);color:#888;letter-spacing:5px;text-align:center;margin-bottom:6px}
+.mb{background:rgba(255,255,255,.04);border:1.5px solid rgba(255,215,0,.35);color:#FFD700;font-size:clamp(12px,2vw,16px);padding:11px 0;border-radius:5px;cursor:pointer;width:220px;letter-spacing:2px;transition:.18s}
 .mb:hover{background:rgba(255,215,0,.14);border-color:#FFD700;transform:scale(1.03)}
-.cb{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);color:#ccc;
-    font-size:12px;padding:7px 10px;border-radius:4px;cursor:pointer;
-    text-align:left;transition:.18s;display:flex;align-items:center;gap:6px}
+.cb{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.18);color:#ccc;font-size:12px;padding:7px 10px;border-radius:4px;cursor:pointer;text-align:left;transition:.18s;display:flex;align-items:center;gap:6px}
 .cb:hover,.cb.on{background:rgba(255,215,0,.12);border-color:#FFD700;color:#FFD700}
-.divider{width:230px;border-top:1px solid rgba(255,255,255,.1);margin:8px 0}
-.ctrl-lbl{font-size:10px;color:#666;letter-spacing:3px;margin-bottom:8px}
-.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:230px}
-.panel{background:rgba(8,12,22,.92);border:1px solid rgba(255,215,0,.2);border-radius:10px;
-       padding:24px 28px;display:flex;flex-direction:column;align-items:center;gap:13px;
-       max-width:320px;width:90%}
+.divider{width:220px;border-top:1px solid rgba(255,255,255,.1);margin:8px 0}
+.ctrl-lbl{font-size:10px;color:#666;letter-spacing:3px;text-align:center;margin-bottom:8px}
+.ctrl-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;width:220px}
+.panel{background:rgba(8,12,22,.9);border:1px solid rgba(255,215,0,.2);border-radius:10px;padding:24px 28px;display:flex;flex-direction:column;align-items:center;gap:13px;max-width:310px;width:90%}
 .pnl-title{font-size:20px;color:#FFD700;letter-spacing:2px;font-weight:700;margin-bottom:2px}
 .row{display:flex;justify-content:space-between;align-items:center;color:#ccc;font-size:13px;width:100%}
 select{background:#111;border:1px solid #333;color:#eee;padding:4px 8px;border-radius:4px;font-size:12px}
 input[type=range]{width:90px;accent-color:#FFD700}
 input[type=checkbox]{accent-color:#FFD700;width:16px;height:16px;cursor:pointer}
-.hud-box{position:absolute;background:rgba(0,0,0,.68);border:1px solid rgba(255,255,255,.12);
-         padding:8px 13px;border-radius:6px;color:#eee;font-size:12px;line-height:1.85;backdrop-filter:blur(3px)}
-#hud-tip{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);
-         background:rgba(0,0,0,.6);padding:6px 18px;border-radius:20px;color:#888;font-size:11px;white-space:nowrap}
-#hud-msg{position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);color:#FFD700;
-         font-size:clamp(15px,3vw,24px);text-align:center;pointer-events:none;opacity:0;
-         transition:opacity .4s;font-weight:700;text-shadow:0 0 14px rgba(255,215,0,.9);line-height:1.5}
-/* Bar */
-.bar-wrap{width:100%;height:6px;background:rgba(255,255,255,.12);border-radius:3px;margin-top:2px}
-.bar-fill{height:6px;border-radius:3px;transition:width .3s}
-/* Touch controls */
-#touch-ctrl{position:absolute;bottom:20px;left:0;right:0;
-             display:flex;justify-content:space-between;align-items:flex-end;padding:0 18px}
-#joystick-zone{width:130px;height:130px;position:relative}
-#joystick-base{width:110px;height:110px;border-radius:50%;
-               background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.22);
-               position:absolute;top:10px;left:10px}
-#joystick-knob{width:46px;height:46px;border-radius:50%;
-               background:rgba(255,215,0,.65);border:2px solid #FFD700;
-               position:absolute;top:32px;left:32px}
-.act-btn{width:60px;height:60px;border-radius:50%;border:2px solid rgba(255,255,255,.3);
-         background:rgba(255,255,255,.1);color:#fff;font-size:22px;
-         display:flex;align-items:center;justify-content:center;cursor:pointer;
-         -webkit-user-select:none;user-select:none;margin:5px}
+#s-game canvas{position:absolute;inset:0;width:100%!important;height:100%!important}
+.hud-box{position:absolute;background:rgba(0,0,0,.65);border:1px solid rgba(255,255,255,.12);padding:8px 12px;border-radius:6px;color:#eee;font-size:12px;line-height:1.8;backdrop-filter:blur(2px)}
+#hud-tip{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.55);padding:5px 18px;border-radius:20px;color:#888;font-size:11px;white-space:nowrap}
+#hud-msg{position:absolute;top:40%;left:50%;transform:translate(-50%,-50%);color:#FFD700;font-size:clamp(14px,3vw,22px);text-align:center;pointer-events:none;opacity:0;transition:opacity .5s;font-weight:700;text-shadow:0 0 12px rgba(255,215,0,.8)}
+
+/* Mobile touch controls */
+#touch-ctrl{position:absolute;bottom:20px;left:0;right:0;display:flex;justify-content:space-between;align-items:flex-end;padding:0 20px;pointer-events:none}
+#joystick-zone{width:130px;height:130px;position:relative;pointer-events:all}
+#joystick-base{width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.25);position:absolute;top:10px;left:10px}
+#joystick-knob{width:46px;height:46px;border-radius:50%;background:rgba(255,215,0,.7);border:2px solid #FFD700;position:absolute;top:32px;left:32px;transition:none}
+#action-btns{display:flex;flex-direction:column;gap:10px;pointer-events:all}
+.act-btn{width:58px;height:58px;border-radius:50%;border:2px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;-webkit-user-select:none;user-select:none}
 #btn-atk{background:rgba(255,50,50,.3);border-color:#ff5555}
 #btn-eat{background:rgba(255,200,0,.2);border-color:#FFD700}
-#btn-gym{background:rgba(50,100,255,.2);border-color:#5588ff}
-#action-btns{display:flex;flex-direction:column;align-items:center}
+
+/* Gamepad visual */
+#gamepad-hint{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);padding:6px 14px;border-radius:8px;color:#aaa;font-size:11px;display:flex;gap:12px;align-items:center}
+.gb{display:inline-block;border:1.5px solid #666;border-radius:3px;padding:1px 5px;font-size:10px;color:#ccc}
+
 .save-y{background:rgba(255,215,0,.1);border:1.5px solid rgba(255,215,0,.5);color:#FFD700}
 .save-n{background:rgba(255,80,80,.07);border:1.5px solid rgba(255,100,100,.35);color:#ff9999}
 .save-y:hover{background:rgba(255,215,0,.25)}
-.save-n:hover{background:rgba(255,80,80,.2)}
-#loading-screen{position:absolute;inset:0;background:#000;
-                display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;z-index:99}
-#loading-bar-wrap{width:260px;height:6px;background:rgba(255,255,255,.1);border-radius:3px}
-#loading-bar{height:6px;width:0%;background:#FFD700;border-radius:3px;transition:width .3s}
-#loading-txt{color:#aaa;font-size:13px;letter-spacing:2px}
-</style>
-</head>
+.save-n:hover{background:rgba(255,80,80,.18)}
+
+#vrm-status{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#FFD700;font-size:14px;background:rgba(0,0,0,.8);padding:16px 24px;border-radius:8px;text-align:center;pointer-events:none}
+</style></head>
 <body>
 <div id="gc">
 <canvas id="bgc"></canvas>
-
-<!-- LOADING -->
-<div id="loading-screen" class="gone">
-  <div style="color:#FFD700;font-size:20px;font-weight:700;letter-spacing:3px">CARREGANDO</div>
-  <div id="loading-bar-wrap"><div id="loading-bar"></div></div>
-  <div id="loading-txt">Iniciando...</div>
-</div>
 
 <!-- MENU -->
 <div class="scr" id="s-menu">
@@ -103,18 +73,16 @@ input[type=checkbox]{accent-color:#FFD700;width:16px;height:16px;cursor:pointer}
   </div>
 </div>
 
-<!-- SALVAR -->
+<!-- SALVAR? -->
 <div class="scr gone" id="s-save">
   <div class="panel">
     <div class="pnl-title">SALVAR JOGO?</div>
-    <div style="color:#aaa;font-size:13px;text-align:center;line-height:1.6">
-      Deseja ativar o salvamento<br>automático do progresso?
-    </div>
+    <div style="color:#aaa;font-size:13px;text-align:center;line-height:1.6">Deseja ativar o salvamento<br>automático do progresso?</div>
     <div style="display:flex;gap:12px;margin-top:6px;width:100%">
       <button class="mb save-y" style="flex:1;width:auto" onclick="startGame(true)">SIM</button>
       <button class="mb save-n" style="flex:1;width:auto" onclick="startGame(false)">NÃO</button>
     </div>
-    <button class="cb" style="justify-content:center;width:100%;margin-top:4px" onclick="go('s-menu')">← Voltar</button>
+    <button class="cb" style="font-size:12px;justify-content:center;width:100%;margin-top:4px" onclick="go('s-menu')">← Voltar</button>
   </div>
 </div>
 
@@ -123,74 +91,51 @@ input[type=checkbox]{accent-color:#FFD700;width:16px;height:16px;cursor:pointer}
   <div class="panel">
     <div class="pnl-title">OPÇÕES</div>
     <div class="row">Qualidade
-      <select id="opt-quality"><option>Ultra</option><option selected>Alta</option><option>Média</option><option>Baixa</option></select>
+      <select><option>Ultra</option><option selected>Alta</option><option>Média</option><option>Baixa</option></select>
     </div>
-    <div class="row">Música <input type="range" min="0" max="100" value="70" id="opt-music"></div>
-    <div class="row">Efeitos <input type="range" min="0" max="100" value="80" id="opt-sfx"></div>
-    <div class="row">Tela Cheia <input type="checkbox" checked id="opt-fs" onchange="toggleFS()"></div>
+    <div class="row">Música <input type="range" min="0" max="100" value="70"></div>
+    <div class="row">Efeitos <input type="range" min="0" max="100" value="80"></div>
+    <div class="row">Tela Cheia <input type="checkbox" checked></div>
     <div class="row">Idioma
       <select><option selected>Português</option><option>English</option><option>Español</option></select>
     </div>
     <div class="row">Dificuldade
-      <select id="opt-diff"><option>Fácil</option><option selected>Normal</option><option>Difícil</option><option>Inferno</option></select>
+      <select><option>Fácil</option><option selected>Normal</option><option>Difícil</option><option>Inferno</option></select>
     </div>
     <button class="cb" style="justify-content:center;width:100%;margin-top:4px" onclick="go('s-menu')">← Voltar</button>
   </div>
 </div>
 
-<!-- JOGO -->
+<!-- JOGO 3D -->
 <div class="scr gone" id="s-game">
   <canvas id="gc3d"></canvas>
+  <div id="vrm-status" class="gone"></div>
 
-  <!-- HUD Jogador -->
-  <div class="hud-box" style="top:12px;left:12px;min-width:155px">
-    <div style="color:#FFD700;font-weight:700;font-size:14px;margin-bottom:3px">Badres Gamer</div>
-    <div>❤️ <span id="hud-hp">100</span>/100
-      <div class="bar-wrap"><div class="bar-fill" id="bar-hp" style="width:100%;background:#ff4444"></div></div>
-    </div>
-    <div>💪 Força: <span id="hud-str">50</span>
-      <div class="bar-wrap"><div class="bar-fill" id="bar-str" style="width:50%;background:#4488ff"></div></div>
-    </div>
-    <div>🍔 Fome: <span id="hud-hgr">50</span>%
-      <div class="bar-wrap"><div class="bar-fill" id="bar-hgr" style="width:50%;background:#ffaa00"></div></div>
-    </div>
-    <div id="hud-sv" style="color:#88ff88;font-size:10px;margin-top:3px"></div>
+  <div class="hud-box" style="top:12px;left:12px;min-width:148px">
+    <div style="color:#FFD700;font-weight:700;font-size:14px;margin-bottom:2px">Badres Gamer</div>
+    <div>❤️ <span id="hud-hp">100</span>/100</div>
+    <div>💪 Força: <span id="hud-str">50</span></div>
+    <div>🍔 Fome: <span id="hud-hgr">50</span>%</div>
+    <div id="hud-sv" style="color:#88ff88;font-size:10px;margin-top:2px"></div>
+  </div>
+  <div class="hud-box" style="top:12px;right:12px;min-width:120px">
+    <div style="color:#ff5555;font-weight:700;font-size:13px;margin-bottom:2px">Badres Prime</div>
+    <div>❤️ <span id="hud-ehp">100</span>/100</div>
+    <div style="color:#ffaa00;font-size:10px">VILÃO</div>
   </div>
 
-  <!-- HUD Davi -->
-  <div class="hud-box" style="top:12px;left:185px;min-width:120px">
-    <div style="color:#22cc66;font-weight:700;font-size:13px;margin-bottom:3px">Davi</div>
-    <div>❤️ <span id="hud-ahp">100</span>/100
-      <div class="bar-wrap"><div class="bar-fill" id="bar-ahp" style="width:100%;background:#22cc66"></div></div>
-    </div>
-  </div>
-
-  <!-- HUD Inimigo -->
-  <div class="hud-box" style="top:12px;right:12px;min-width:135px">
-    <div style="color:#ff4444;font-weight:700;font-size:14px;margin-bottom:3px">Badres Prime</div>
-    <div>❤️ <span id="hud-ehp">100</span>/100
-      <div class="bar-wrap"><div class="bar-fill" id="bar-ehp" style="width:100%;background:#ff4444"></div></div>
-    </div>
-    <div style="color:#ffaa00;font-size:10px;margin-top:2px">👿 VILÃO</div>
-  </div>
-
-  <!-- HUD Estado -->
-  <div class="hud-box" style="bottom:70px;left:12px;font-size:11px" id="hud-state"></div>
-
+  <!-- PC/Gamepad hint -->
   <div id="hud-tip"></div>
 
-  <!-- Touch -->
+  <!-- Mobile touch controls -->
   <div id="touch-ctrl" class="gone">
     <div id="joystick-zone">
       <div id="joystick-base"></div>
       <div id="joystick-knob"></div>
     </div>
     <div id="action-btns">
-      <div style="display:flex;gap:6px">
-        <div class="act-btn" id="btn-atk" ontouchstart="doAttack()">⚔️</div>
-        <div class="act-btn" id="btn-eat" ontouchstart="doEat()">🍔</div>
-      </div>
-      <div class="act-btn" id="btn-gym" ontouchstart="doGym()" style="margin:0 auto">🏋️</div>
+      <div class="act-btn" id="btn-atk">⚔️</div>
+      <div class="act-btn" id="btn-eat">🍔</div>
     </div>
   </div>
 
@@ -199,767 +144,427 @@ input[type=checkbox]{accent-color:#FFD700;width:16px;height:16px;cursor:pointer}
 </div>
 
 <!-- Three.js r128 -->
-<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<!-- GLTFLoader r128 -->
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<!-- three-vrm v1 (compatível com three r128, suporta VRM 1.0) -->
 <script src="https://cdn.jsdelivr.net/npm/@pixiv/three-vrm@1/lib/three-vrm.js"></script>
 
 <script>
-// ════════════════════════════════════════════
-//  CONFIG
-// ════════════════════════════════════════════
+// ── CONFIG: Cole as URLs dos seus arquivos VRM aqui ──
 const VRM_URLS = {
-  player: 'Badres%20Gamer.vrm',
-  ally:   'Davi.vrm',
-  enemy:  'Badres%20Prime.vrm'
+  player: 'https://beguagua.github.io/badresprimegame/Badres%20Gamer.vrm',
+  ally:   'https://beguagua.github.io/badresprimegame/Davi.vrm',
+  enemy:  'https://beguagua.github.io/badresprimegame/Badres%20Prime.vrm'
 };
+// ─────────────────────────────────────────────────────
 
-const CTRL_TIPS = {
-  xbox:    '🕹️ <b>LS</b> Mover &nbsp; <b>A</b> Atacar &nbsp; <b>B</b> Comer &nbsp; <b>X</b> Malhar &nbsp; <b>Menu</b> Pausar',
-  ps:      '🕹️ <b>L</b> Mover &nbsp; <b>✕</b> Atacar &nbsp; <b>○</b> Comer &nbsp; <b>□</b> Malhar &nbsp; <b>Options</b> Pausar',
-  switch:  '🕹️ <b>L</b> Mover &nbsp; <b>A</b> Atacar &nbsp; <b>B</b> Comer &nbsp; <b>Y</b> Malhar &nbsp; <b>+</b> Pausar',
-  samsung: '📺 <b>▲▼◀▶</b> Mover &nbsp; <b>OK</b> Ação &nbsp; <b>Voltar</b> Menu',
-  pc:      '⌨️ <b>WASD</b> Mover &nbsp; <b>J</b> Atacar &nbsp; <b>E</b> Comer &nbsp; <b>G</b> Malhar &nbsp; <b>ESC</b> Menu',
-  mobile:  ''
-};
+let ctrl='xbox', saveon=false, started=false;
+let scene,cam,ren,clock;
+let playerObj={group:null,vrm:null}, allyObj={group:null,vrm:null}, enemyObj={group:null,vrm:null};
+let keys={};
+let ps={hp:100,str:50,hunger:50};
+let es={hp:100};
+let animReq=null;
+let joystickActive=false,joyX=0,joyY=0;
+const joyBase=document.getElementById('joystick-base');
+const joyKnob=document.getElementById('joystick-knob');
 
-// ════════════════════════════════════════════
-//  STATE
-// ════════════════════════════════════════════
-let ctrl = 'xbox', saveon = false, started = false;
-let scene, cam, ren, clock;
-let animReq = null;
-let keys = {};
-let joyX = 0, joyY = 0, joystickActive = false;
-
-const ps = { hp:100, str:50, hunger:50, state:'idle' };
-const as = { hp:100 };
-const es = { hp:100, phase:1 };
-
-const chars = {
-  player: { group: null, vrm: null, mixer: null, actions: {}, anim: 'idle' },
-  ally:   { group: null, vrm: null, mixer: null, actions: {}, anim: 'idle' },
-  enemy:  { group: null, vrm: null, mixer: null, actions: {}, anim: 'idle' }
-};
-
-// ════════════════════════════════════════════
-//  NAVIGATION
-// ════════════════════════════════════════════
-function go(id) {
-  document.querySelectorAll('.scr').forEach(s => s.classList.add('gone'));
+// ── NAVIGATION ────────────────────────────────────
+function go(id){
+  document.querySelectorAll('.scr').forEach(s=>s.classList.add('gone'));
   document.getElementById(id).classList.remove('gone');
 }
-function setC(btn, type) {
-  ctrl = type;
-  document.querySelectorAll('#ctrlg .cb').forEach(b => b.classList.remove('on'));
+function setC(btn,type){
+  ctrl=type;
+  document.querySelectorAll('#ctrlg .cb').forEach(b=>b.classList.remove('on'));
   btn.classList.add('on');
 }
-function gotoSave() { go('s-save'); }
-function toggleFS() {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else document.documentElement.requestFullscreen();
+function gotoSave(){go('s-save');}
+
+const CTRL_TIPS={
+  xbox:'<span class="gb">LS</span> Mover &nbsp;<span class="gb">A</span> Atacar &nbsp;<span class="gb">B</span> Comer &nbsp;<span class="gb">Menu</span> Pausar',
+  ps:'<span class="gb">L</span> Mover &nbsp;<span class="gb">✕</span> Atacar &nbsp;<span class="gb">○</span> Comer &nbsp;<span class="gb">Options</span> Pausar',
+  switch:'<span class="gb">L</span> Mover &nbsp;<span class="gb">A</span> Atacar &nbsp;<span class="gb">B</span> Comer &nbsp;<span class="gb">+</span> Pausar',
+  samsung:'<span class="gb">▲▼◀▶</span> Mover &nbsp;<span class="gb">OK</span> Ação &nbsp;<span class="gb">Back</span> Pausar',
+  pc:'<span class="gb">W A S D</span> Mover &nbsp;<span class="gb">Shift</span> Correr &nbsp;<span class="gb">ESC</span> Menu',
+  mobile:''
+};
+
+function startGame(sv){
+  saveon=sv;
+  document.getElementById('hud-sv').textContent=sv?'💾 Auto-save ON':'';
+  go('s-game');
+
+  // Controls UI
+  const tipEl=document.getElementById('hud-tip');
+  const touchEl=document.getElementById('touch-ctrl');
+  if(ctrl==='mobile'){
+    tipEl.classList.add('gone');
+    touchEl.classList.remove('gone');
+    initTouchControls();
+  } else {
+    tipEl.classList.remove('gone');
+    tipEl.innerHTML=CTRL_TIPS[ctrl]||CTRL_TIPS.pc;
+    tipEl.style.cssText='position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);padding:6px 16px;border-radius:8px;color:#aaa;font-size:11px;display:flex;gap:10px;align-items:center';
+    touchEl.classList.add('gone');
+  }
+
+  if(!started){initGame();started=true;}
+  showMsg(sv?'💾 Salvamento ativado':'▶ Sem salvamento — boa sorte!');
 }
 
-// ════════════════════════════════════════════
-//  STARFIELD BG
-// ════════════════════════════════════════════
-const bgc = document.getElementById('bgc');
-const bgx = bgc.getContext('2d');
-const stars = Array.from({length:200}, () => ({
-  x: Math.random(), y: Math.random(),
-  r: Math.random()*1.8+.3, s: Math.random()*.6+.1, ph: Math.random()*Math.PI*2
-}));
-function drawBg() {
-  const W = bgc.offsetWidth, H = bgc.offsetHeight;
-  bgc.width = W; bgc.height = H;
-  bgx.fillStyle = '#06090f'; bgx.fillRect(0,0,W,H);
-  const t = Date.now()/1000;
-  stars.forEach(s => {
-    bgx.beginPath();
-    bgx.arc(s.x*W, s.y*H, s.r, 0, Math.PI*2);
-    bgx.fillStyle = `rgba(255,250,200,${.2+.45*Math.sin(t*s.s+s.ph)})`;
-    bgx.fill();
+// ── STARFIELD ─────────────────────────────────────
+const bgc=document.getElementById('bgc'),bgx=bgc.getContext('2d');
+const stars=Array.from({length:180},()=>({x:Math.random(),y:Math.random(),r:Math.random()*1.8+.3,s:Math.random()*.6+.1,ph:Math.random()*Math.PI*2}));
+function drawBg(){
+  const W=bgc.offsetWidth,H=bgc.offsetHeight;
+  bgc.width=W;bgc.height=H;
+  bgx.fillStyle='#06090f';bgx.fillRect(0,0,W,H);
+  const t=Date.now()/1000;
+  stars.forEach(s=>{
+    bgx.beginPath();bgx.arc(s.x*W,s.y*H,s.r,0,Math.PI*2);
+    bgx.fillStyle=`rgba(255,250,200,${.2+.45*Math.sin(t*s.s+s.ph)})`;bgx.fill();
   });
-  // YouTube logo glow
-  bgx.save(); bgx.globalAlpha = .08+.03*Math.sin(t*.35);
-  bgx.fillStyle='#ff0000'; bgx.beginPath();
-  bgx.roundRect(W/2-44, H*.1, 88, 60, 10); bgx.fill();
-  bgx.fillStyle='#fff'; bgx.beginPath();
-  bgx.moveTo(W/2-14, H*.1+17); bgx.lineTo(W/2+22, H*.1+30);
-  bgx.lineTo(W/2-14, H*.1+43); bgx.closePath(); bgx.fill();
-  bgx.restore();
+  bgx.save();bgx.globalAlpha=.07+.03*Math.sin(t*.4);
+  bgx.fillStyle='#ff0000';bgx.beginPath();
+  bgx.roundRect(W/2-42,H*.1,84,58,9);bgx.fill();
+  bgx.fillStyle='#fff';bgx.beginPath();
+  bgx.moveTo(W/2-13,H*.1+16);bgx.lineTo(W/2+20,H*.1+29);bgx.lineTo(W/2-13,H*.1+42);
+  bgx.closePath();bgx.fill();bgx.restore();
   requestAnimationFrame(drawBg);
 }
 drawBg();
 
-// ════════════════════════════════════════════
-//  TOUCH JOYSTICK
-// ════════════════════════════════════════════
-function initTouch() {
-  const zone = document.getElementById('joystick-zone');
-  const knob = document.getElementById('joystick-knob');
-  const R = 48;
-  function onStart(e) { e.preventDefault(); joystickActive = true; onMove(e); }
-  function onMove(e) {
-    if (!joystickActive) return; e.preventDefault();
-    const touch = e.touches ? e.touches[0] : e;
-    const rect = zone.getBoundingClientRect();
-    const cx = rect.left+rect.width/2, cy = rect.top+rect.height/2;
-    let dx = touch.clientX-cx, dy = touch.clientY-cy;
-    const dist = Math.min(Math.sqrt(dx*dx+dy*dy), R);
-    const ang = Math.atan2(dy, dx);
-    const nx = Math.cos(ang)*dist, ny = Math.sin(ang)*dist;
-    knob.style.left = (55+nx-23)+'px'; knob.style.top = (55+ny-23)+'px';
-    joyX = nx/R; joyY = ny/R;
+// ── TOUCH JOYSTICK ────────────────────────────────
+function initTouchControls(){
+  const zone=document.getElementById('joystick-zone');
+  const R=50;
+  function onStart(e){
+    e.preventDefault();joystickActive=true;
+    onMove(e);
   }
-  function onEnd() {
-    joystickActive = false; joyX = 0; joyY = 0;
-    knob.style.left = '32px'; knob.style.top = '32px';
+  function onMove(e){
+    if(!joystickActive)return;
+    e.preventDefault();
+    const touch=e.touches?e.touches[0]:e;
+    const rect=zone.getBoundingClientRect();
+    const cx=rect.left+rect.width/2, cy=rect.top+rect.height/2;
+    let dx=touch.clientX-cx, dy=touch.clientY-cy;
+    const dist=Math.min(Math.sqrt(dx*dx+dy*dy),R);
+    const angle=Math.atan2(dy,dx);
+    const nx=Math.cos(angle)*dist, ny=Math.sin(angle)*dist;
+    joyKnob.style.left=(55+nx-23)+'px';joyKnob.style.top=(55+ny-23)+'px';
+    joyX=nx/R;joyY=ny/R;
   }
-  zone.addEventListener('touchstart', onStart, {passive:false});
-  zone.addEventListener('touchmove', onMove, {passive:false});
-  zone.addEventListener('touchend', onEnd);
+  function onEnd(e){
+    joystickActive=false;joyX=0;joyY=0;
+    joyKnob.style.left='32px';joyKnob.style.top='32px';
+  }
+  zone.addEventListener('touchstart',onStart,{passive:false});
+  zone.addEventListener('touchmove',onMove,{passive:false});
+  zone.addEventListener('touchend',onEnd);
+  zone.addEventListener('mousedown',onStart);
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('mouseup',onEnd);
 }
 
-// ════════════════════════════════════════════
-//  VRM LOADER
-// ════════════════════════════════════════════
-function loadVRM(url, onLoad, onFail) {
+// ── VRM LOADER ────────────────────────────────────
+function loadVRM(url, onLoad, onFail){
   const loader = new THREE.GLTFLoader();
-  loader.register(p => new THREE.VRMLoaderPlugin(p, {autoUpdateHumanBones: true}));
+  loader.register(parser => new THREE.VRMLoaderPlugin(parser));
   loader.load(url,
     gltf => {
       const vrm = gltf.userData.vrm;
-      if (!vrm) { onFail('no vrm data'); return; }
+      if(!vrm){ console.warn('No VRM in file'); onFail(); return; }
       THREE.VRMUtils.removeUnnecessaryVertices(gltf.scene);
       THREE.VRMUtils.removeUnnecessaryJoints(gltf.scene);
       vrm.scene.rotation.y = Math.PI;
       onLoad(vrm);
     },
-    xhr => {
-      const pct = Math.round((xhr.loaded / (xhr.total||1))*100);
-      setLoadTxt(`Carregando... ${pct}%`);
-    },
-    err => { console.warn('VRM failed:', err); onFail(err); }
+    undefined,
+    err => { console.warn('VRM load failed:', err); onFail(); }
   );
 }
 
-// ════════════════════════════════════════════
-//  PROCEDURAL ANIMATIONS (VRM bones)
-// ════════════════════════════════════════════
-// We animate bones directly since we have no external animation files.
-// Each char object stores bone references after VRM load.
-
-function getBones(vrm) {
-  const hb = vrm.humanoid;
-  const get = n => { try { return hb.getNormalizedBoneNode(n); } catch(e) { return null; } };
-  return {
-    hips:       get('hips'),
-    spine:      get('spine'),
-    chest:      get('chest'),
-    head:       get('head'),
-    neck:       get('neck'),
-    lUpperArm:  get('leftUpperArm'),
-    rUpperArm:  get('rightUpperArm'),
-    lLowerArm:  get('leftLowerArm'),
-    rLowerArm:  get('rightLowerArm'),
-    lUpperLeg:  get('leftUpperLeg'),
-    rUpperLeg:  get('rightUpperLeg'),
-    lLowerLeg:  get('leftLowerLeg'),
-    rLowerLeg:  get('rightLowerLeg'),
-    lFoot:      get('leftFoot'),
-    rFoot:      get('rightFoot'),
-  };
+function setVRMStatus(txt){
+  const el=document.getElementById('vrm-status');
+  if(txt){el.textContent=txt;el.classList.remove('gone');}
+  else el.classList.add('gone');
 }
 
-const PI = Math.PI;
-function animateBones(bones, state, t, fat) {
-  if (!bones) return;
-  const s = Math.sin, c = Math.cos;
-  const fatScale = fat > 70 ? 1 + (fat-70)/60 : 1; // body gets bigger when fat
+// ── INIT GAME ─────────────────────────────────────
+function initGame(){
+  clock=new THREE.Clock();
+  const el=document.getElementById('gc3d');
+  const cont=document.getElementById('s-game');
+  const W=cont.offsetWidth||window.innerWidth;
+  const H=cont.offsetHeight||window.innerHeight;
 
-  // Helper
-  function setRot(bone, x, y, z) {
-    if (!bone) return;
-    bone.rotation.x = x; bone.rotation.y = y; bone.rotation.z = z;
-  }
+  ren=new THREE.WebGLRenderer({canvas:el,antialias:true});
+  ren.setPixelRatio(Math.min(devicePixelRatio,2));
+  ren.setSize(W,H);
+  ren.shadowMap.enabled=true;
+  ren.shadowMap.type=THREE.PCFSoftShadowMap;
 
-  if (state === 'idle') {
-    const b = s(t*1.2)*0.015;
-    const h = s(t*1.2)*0.008;
-    setRot(bones.spine, 0.02, 0, b);
-    setRot(bones.head, 0.05+s(t*.5)*.02, s(t*.4)*.02, 0);
-    setRot(bones.lUpperArm, 0.1, 0, -0.15+b);
-    setRot(bones.rUpperArm, 0.1, 0,  0.15-b);
-    setRot(bones.lLowerArm, 0.1+s(t*1.2)*.04, 0, 0);
-    setRot(bones.rLowerArm, 0.1+s(t*1.2+PI)*.04, 0, 0);
-    setRot(bones.lUpperLeg, h, 0, 0);
-    setRot(bones.rUpperLeg, -h, 0, 0);
-    setRot(bones.hips, s(t*.6)*.01, 0, 0);
-  }
+  scene=new THREE.Scene();
+  scene.background=new THREE.Color(0x87CEEB);
+  scene.fog=new THREE.FogExp2(0x87CEEB,.011);
 
-  if (state === 'walk') {
-    const spd = 3.5;
-    const leg = s(t*spd)*0.55;
-    const arm = s(t*spd)*0.45;
-    const hip = s(t*spd)*0.06;
-    setRot(bones.hips, 0, s(t*spd)*.04, 0);
-    setRot(bones.spine, 0.04, 0, s(t*spd)*.02);
-    setRot(bones.head, 0.05, 0, 0);
-    setRot(bones.lUpperLeg, leg, 0, 0);
-    setRot(bones.rUpperLeg, -leg, 0, 0);
-    setRot(bones.lLowerLeg, Math.max(0,-leg)*.9, 0, 0);
-    setRot(bones.rLowerLeg, Math.max(0,leg)*.9, 0, 0);
-    setRot(bones.lUpperArm, -arm*.6, 0, -0.1);
-    setRot(bones.rUpperArm,  arm*.6, 0,  0.1);
-    setRot(bones.lLowerArm, 0.15+Math.max(0,arm)*.3, 0, 0);
-    setRot(bones.rLowerArm, 0.15+Math.max(0,-arm)*.3, 0, 0);
-  }
+  cam=new THREE.PerspectiveCamera(65,W/H,.1,250);
+  cam.position.set(0,8,14);
 
-  if (state === 'attack') {
-    const a = s(t*8);
-    setRot(bones.rUpperArm, -0.6+a*.5, 0, 0.1);
-    setRot(bones.rLowerArm, 0.8+a*.4, 0, 0);
-    setRot(bones.lUpperArm, 0.3, 0, -0.2);
-    setRot(bones.spine, 0.05, a*.08, 0);
-    setRot(bones.head, 0.05, a*.04, 0);
-    setRot(bones.lUpperLeg, 0.1, 0, 0);
-    setRot(bones.rUpperLeg, -0.1, 0, 0);
-  }
+  scene.add(new THREE.AmbientLight(0xffffff,.55));
+  const sun=new THREE.DirectionalLight(0xfff8e7,1.1);
+  sun.position.set(30,60,20);sun.castShadow=true;
+  sun.shadow.mapSize.set(1024,1024);
+  sun.shadow.camera.far=150;
+  sun.shadow.camera.left=sun.shadow.camera.bottom=-60;
+  sun.shadow.camera.right=sun.shadow.camera.top=60;
+  scene.add(sun);
 
-  if (state === 'gym') {
-    // Bicep curl animation
-    const curl = (s(t*4)+1)/2; // 0 to 1
-    setRot(bones.lUpperArm, -0.3, 0, -0.2);
-    setRot(bones.rUpperArm, -0.3, 0,  0.2);
-    setRot(bones.lLowerArm, 0.2+curl*2.2, 0, 0);
-    setRot(bones.rLowerArm, 0.2+curl*2.2, 0, 0);
-    setRot(bones.spine, 0.05+curl*.05, 0, 0);
-    setRot(bones.head, -0.05, 0, 0);
-    setRot(bones.lUpperLeg, 0, 0, 0.05);
-    setRot(bones.rUpperLeg, 0, 0,-0.05);
-  }
+  buildWorld();
 
-  if (state === 'eat') {
-    const e = (s(t*3)+1)/2;
-    setRot(bones.rUpperArm, -0.8+e*.2, 0, 0.15);
-    setRot(bones.rLowerArm, 1.6-e*.4, 0, 0);
-    setRot(bones.lUpperArm, 0.1, 0,-0.15);
-    setRot(bones.head, -0.1+e*.15, 0, 0);
-    setRot(bones.spine, 0.06, 0, 0);
-  }
+  // ── Spawn characters ──────────────────────────
+  // Player
+  const pGroup=new THREE.Group(); scene.add(pGroup);
+  playerObj.group=pGroup; pGroup.position.set(0,0,0);
+  if(VRM_URLS.player){
+    setVRMStatus('Carregando Badres Gamer...');
+    loadVRM(VRM_URLS.player,
+      vrm=>{
+        playerObj.vrm=vrm;
+        vrm.scene.position.y=0;
+        pGroup.add(vrm.scene);
+        if(!VRM_URLS.ally&&!VRM_URLS.enemy)setVRMStatus(null);
+        else setVRMStatus('Carregando personagens...');
+      },
+      ()=>{ pGroup.add(makeFallback(0x2288ff,'p')); setVRMStatus('VRM inválido — usando placeholder'); setTimeout(()=>setVRMStatus(null),2000); }
+    );
+  } else { pGroup.add(makeFallback(0x2288ff,'p')); }
 
-  if (state === 'die') {
-    const fall = Math.min(1, (t%4)/1.5);
-    setRot(bones.hips, fall*PI/2, 0, 0);
-    setRot(bones.spine, fall*.8, 0, 0);
-    setRot(bones.lUpperArm, fall*.5, 0, -fall*.4);
-    setRot(bones.rUpperArm, fall*.5, 0,  fall*.4);
-    setRot(bones.lUpperLeg, fall*.3, 0, 0);
-    setRot(bones.rUpperLeg,-fall*.3, 0, 0);
-  }
+  // Ally
+  const aGroup=new THREE.Group(); scene.add(aGroup);
+  allyObj.group=aGroup; aGroup.position.set(2.5,0,1);
+  if(VRM_URLS.ally){
+    loadVRM(VRM_URLS.ally,
+      vrm=>{allyObj.vrm=vrm;vrm.scene.position.y=0;aGroup.add(vrm.scene);},
+      ()=>aGroup.add(makeFallback(0x22cc66,'a'))
+    );
+  } else { aGroup.add(makeFallback(0x22cc66,'a')); }
 
-  if (state === 'enemy_idle') {
-    const b = s(t*2)*0.03;
-    setRot(bones.spine, 0.1, 0, b);
-    setRot(bones.head, s(t*.7)*.05, s(t*.5)*.04, 0);
-    setRot(bones.lUpperArm, 0.2+b, 0, -0.3);
-    setRot(bones.rUpperArm, 0.2-b, 0,  0.3);
-    setRot(bones.hips, 0, s(t*.8)*.03, 0);
-  }
+  // Enemy
+  const eGroup=new THREE.Group(); scene.add(eGroup);
+  enemyObj.group=eGroup; eGroup.position.set(0,0,-28);
+  if(VRM_URLS.enemy){
+    loadVRM(VRM_URLS.enemy,
+      vrm=>{enemyObj.vrm=vrm;vrm.scene.position.y=0;eGroup.add(vrm.scene);setVRMStatus(null);},
+      ()=>eGroup.add(makeFallback(0xee2222,'e'))
+    );
+  } else { eGroup.add(makeFallback(0xee2222,'e')); }
 
-  if (state === 'enemy_attack') {
-    const a = s(t*10);
-    setRot(bones.rUpperArm, -0.8+a*.6, 0, 0.2);
-    setRot(bones.rLowerArm, 1.2+a*.5, 0, 0);
-    setRot(bones.lUpperArm, 0.4+a*.2, 0,-0.3);
-    setRot(bones.spine, 0.1+a*.1, a*.08, 0);
-  }
-}
+  addLabel(pGroup,'Badres Gamer',0x2288ff);
+  addLabel(aGroup,'Davi',0x22cc66);
+  addLabel(eGroup,'Badres Prime',0xee2222);
 
-// ════════════════════════════════════════════
-//  FALLBACK CHARACTER (if VRM fails)
-// ════════════════════════════════════════════
-function makeFallback(color, type) {
-  const g = new THREE.Group();
-  const bM = new THREE.MeshLambertMaterial({color});
-  const hM = new THREE.MeshLambertMaterial({color: type==='e' ? 0xff6655 : 0xffcc88});
-  const lM = new THREE.MeshLambertMaterial({color: type==='e' ? 0x880000 : type==='a' ? 0x225533 : 0x334466});
-  const torso = new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,1.2,10), bM);
-  torso.position.y = 1.0; torso.castShadow = true; g.add(torso);
-  const head = new THREE.Mesh(new THREE.SphereGeometry(.36,10,10), hM);
-  head.position.y = 1.9; head.castShadow = true; g.add(head);
-  [-1,1].forEach(s => {
-    const arm = new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.7,6), bM);
-    arm.rotation.z = Math.PI/2*s; arm.position.set(.55*s,1.2,0); g.add(arm);
-    const leg = new THREE.Mesh(new THREE.CylinderGeometry(.18,.16,.85,7), lM);
-    leg.position.set(.22*s,.15,0); g.add(leg);
-    const eye = new THREE.Mesh(new THREE.SphereGeometry(.07,6,6),
-      new THREE.MeshLambertMaterial({color: type==='e' ? 0xff0000 : 0x111111}));
-    eye.position.set(.13*s,1.95,.31); g.add(eye);
+  document.addEventListener('keydown',e=>{
+    keys[e.code]=true;
+    if(e.code==='Escape'){cancelAnimationFrame(animReq);go('s-menu');}
   });
-  if (type === 'e') {
-    [-1,1].forEach(s => {
-      const horn = new THREE.Mesh(new THREE.ConeGeometry(.07,.3,5),
-        new THREE.MeshLambertMaterial({color:0xffaa00}));
-      horn.position.set(.18*s,2.22,0); g.add(horn);
+  document.addEventListener('keyup',e=>keys[e.code]=false);
+  window.addEventListener('resize',onResize);
+  gameLoop();
+}
+
+function makeFallback(color,type){
+  const g=new THREE.Group();
+  const bM=new THREE.MeshLambertMaterial({color});
+  const hM=new THREE.MeshLambertMaterial({color:type==='e'?0xff6655:0xffcc88});
+  const lM=new THREE.MeshLambertMaterial({color:type==='e'?0x880000:type==='a'?0x225533:0x334466});
+  const torso=new THREE.Mesh(new THREE.CylinderGeometry(.42,.42,1.2,10),bM);
+  torso.position.y=1.0;torso.castShadow=true;g.add(torso);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(.36,10,10),hM);
+  head.position.y=1.9;head.castShadow=true;g.add(head);
+  [-1,1].forEach(s=>{
+    const arm=new THREE.Mesh(new THREE.CylinderGeometry(.13,.13,.7,6),bM);
+    arm.rotation.z=Math.PI/2*s;arm.position.set(.55*s,1.2,0);g.add(arm);
+    const leg=new THREE.Mesh(new THREE.CylinderGeometry(.18,.16,.85,7),lM);
+    leg.position.set(.22*s,.15,0);g.add(leg);
+    const eye=new THREE.Mesh(new THREE.SphereGeometry(.07,6,6),new THREE.MeshLambertMaterial({color:type==='e'?0xff0000:0x111111}));
+    eye.position.set(.13*s,1.95,.31);g.add(eye);
+  });
+  if(type==='e'){
+    [-1,1].forEach(s=>{
+      const h=new THREE.Mesh(new THREE.ConeGeometry(.07,.3,5),new THREE.MeshLambertMaterial({color:0xffaa00}));
+      h.position.set(.18*s,2.22,0);g.add(h);
     });
   }
   return g;
 }
 
-// ════════════════════════════════════════════
-//  LABEL
-// ════════════════════════════════════════════
-function addLabel(parent, text, color) {
-  const cv = document.createElement('canvas');
-  cv.width = 256; cv.height = 60;
-  const cx = cv.getContext('2d');
-  cx.fillStyle = 'rgba(0,0,0,.65)';
-  cx.beginPath(); cx.roundRect(2,2,252,56,8); cx.fill();
-  cx.fillStyle = '#' + color.toString(16).padStart(6,'0');
-  cx.font = 'bold 24px Arial'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
-  cx.fillText(text, 128, 30);
-  const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.8,.44),
-    new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(cv), transparent:true, depthWrite:false})
+function addLabel(parent,text,color){
+  const cv=document.createElement('canvas');
+  cv.width=256;cv.height=60;
+  const cx=cv.getContext('2d');
+  cx.fillStyle='rgba(0,0,0,.65)';
+  cx.beginPath();cx.roundRect(2,2,252,56,8);cx.fill();
+  cx.fillStyle='#'+color.toString(16).padStart(6,'0');
+  cx.font='bold 24px Arial';cx.textAlign='center';cx.textBaseline='middle';
+  cx.fillText(text,128,30);
+  const plane=new THREE.Mesh(
+    new THREE.PlaneGeometry(1.7,.42),
+    new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false})
   );
-  plane.position.y = 2.85; parent.add(plane);
+  plane.position.y=2.8;parent.add(plane);
 }
 
-// ════════════════════════════════════════════
-//  WORLD
-// ════════════════════════════════════════════
-function buildWorld() {
+function buildWorld(){
   // Ground
-  const gnd = new THREE.Mesh(new THREE.PlaneGeometry(400,400),
-    new THREE.MeshLambertMaterial({color:0x3a7d44}));
-  gnd.rotation.x = -Math.PI/2; gnd.receiveShadow = true; scene.add(gnd);
-
-  // Road
-  const road = new THREE.Mesh(new THREE.PlaneGeometry(8,200),
-    new THREE.MeshLambertMaterial({color:0x2d2d2d}));
-  road.rotation.x = -Math.PI/2; road.position.y = .003; scene.add(road);
-
-  // Sidewalks
-  [-5, 5].forEach(x => {
-    const sw = new THREE.Mesh(new THREE.PlaneGeometry(2.5,200),
-      new THREE.MeshLambertMaterial({color:0xc8b89a}));
-    sw.rotation.x = -Math.PI/2; sw.position.set(x,.006,0); scene.add(sw);
+  const gnd=new THREE.Mesh(new THREE.PlaneGeometry(300,300),new THREE.MeshLambertMaterial({color:0x3a7d44}));
+  gnd.rotation.x=-Math.PI/2;gnd.receiveShadow=true;scene.add(gnd);
+  // Road + sidewalks
+  const road=new THREE.Mesh(new THREE.PlaneGeometry(7,180),new THREE.MeshLambertMaterial({color:0x333333}));
+  road.rotation.x=-Math.PI/2;road.position.y=.002;scene.add(road);
+  [-4,4].forEach(x=>{
+    const sw=new THREE.Mesh(new THREE.PlaneGeometry(2,180),new THREE.MeshLambertMaterial({color:0xccbbaa}));
+    sw.rotation.x=-Math.PI/2;sw.position.set(x,.005,0);scene.add(sw);
   });
-
-  // Road dashes
-  for (let i = -15; i <= 15; i++) {
-    const d = new THREE.Mesh(new THREE.PlaneGeometry(.25,2.5),
-      new THREE.MeshBasicMaterial({color:0xFFFFAA}));
-    d.rotation.x = -Math.PI/2; d.position.set(0,.01,i*7); scene.add(d);
+  for(let i=-8;i<=8;i++){
+    const m=new THREE.Mesh(new THREE.PlaneGeometry(.28,2.4),new THREE.MeshBasicMaterial({color:0xFFFFAA}));
+    m.rotation.x=-Math.PI/2;m.position.set(0,.01,i*6);scene.add(m);
   }
-
   // Buildings
-  [
-    {x:9,  z:-4,  w:5, h:14, d:5, c:0xaaaaaa},
-    {x:-9, z:-4,  w:4, h:9,  d:4, c:0xbbbbcc},
-    {x:10, z:-14, w:4, h:18, d:5, c:0x999999},
-    {x:-10,z:-14, w:5, h:12, d:4, c:0x888877},
-    {x:9,  z:-25, w:6, h:24, d:6, c:0x8899aa},
-    {x:-9, z:-25, w:4, h:16, d:4, c:0xaabb99},
-    {x:11, z:-36, w:5, h:28, d:5, c:0x778899},
-    {x:-11,z:-36, w:6, h:20, d:5, c:0x997788},
-    {x:9,  z:9,   w:4, h:8,  d:4, c:0xaab0aa},
-    {x:-9, z:9,   w:5, h:11, d:4, c:0x99aacc},
-    {x:10, z:20,  w:6, h:13, d:5, c:0x888899},
-    {x:-10,z:20,  w:4, h:8,  d:4, c:0xbbaa99},
-    // Gym building
-    {x:12, z:5,   w:7, h:6,  d:8, c:0x445566},
-    // Burger shop
-    {x:-12,z:5,   w:6, h:5,  d:6, c:0xdd8833},
-  ].forEach(b => {
-    const bm = new THREE.Mesh(new THREE.BoxGeometry(b.w,b.h,b.d),
-      new THREE.MeshLambertMaterial({color:b.c}));
-    bm.position.set(b.x, b.h/2, b.z);
-    bm.castShadow = true; bm.receiveShadow = true; scene.add(bm);
-    // Windows
-    const rows = Math.floor(b.h/2), cols = Math.floor(b.w/1.6);
-    for (let r = 0; r < rows; r++) for (let c2 = 0; c2 < cols; c2++) {
-      const wm = new THREE.Mesh(new THREE.PlaneGeometry(.44,.44),
-        new THREE.MeshBasicMaterial({color: Math.random()>.35 ? 0xFFFF88 : 0x223344}));
-      wm.position.set(b.x-b.w/2+.7+c2*((b.w-.5)/Math.max(cols-1,1)), r*1.8+1.5, b.z+b.d/2+.02);
+  [{x:9,z:-3,w:5,h:13,d:5,c:0xaaaaaa},{x:-9,z:-3,w:4,h:8,d:4,c:0xbbbbcc},
+   {x:10,z:-13,w:4,h:17,d:5,c:0x999999},{x:-10,z:-13,w:5,h:11,d:4,c:0x888877},
+   {x:9,z:-23,w:6,h:22,d:6,c:0x8899aa},{x:-9,z:-23,w:4,h:15,d:4,c:0xaabb99},
+   {x:11,z:-34,w:5,h:26,d:5,c:0x778899},{x:-11,z:-34,w:6,h:19,d:5,c:0x997788},
+   {x:9,z:8,w:4,h:7,d:4,c:0xaab0aa},{x:-9,z:8,w:5,h:10,d:4,c:0x99aacc},
+   {x:10,z:18,w:6,h:12,d:5,c:0x888899},{x:-10,z:18,w:4,h:8,d:4,c:0xbbaa99}
+  ].forEach(b=>{
+    const bm=new THREE.Mesh(new THREE.BoxGeometry(b.w,b.h,b.d),new THREE.MeshLambertMaterial({color:b.c}));
+    bm.position.set(b.x,b.h/2,b.z);bm.castShadow=true;bm.receiveShadow=true;scene.add(bm);
+    const rows=Math.floor(b.h/2),cols=Math.floor(b.w/1.6);
+    for(let r=0;r<rows;r++)for(let c2=0;c2<cols;c2++){
+      const wm=new THREE.Mesh(new THREE.PlaneGeometry(.44,.44),
+        new THREE.MeshBasicMaterial({color:Math.random()>.35?0xFFFF88:0x223344}));
+      wm.position.set(b.x-b.w/2+.7+c2*((b.w-.5)/Math.max(cols-1,1)),r*1.75+1.4,b.z+b.d/2+.02);
       scene.add(wm);
     }
   });
-
-  // Signs
-  addSign(12, 5.2, 9, '🏋️ ACADEMIA', 0x4488ff);
-  addSign(-12, 4.5, 8, '🍔 BURGUER', 0xff8800);
-
   // Trees
-  [[6,-6],[6,-16],[-6,-9],[-6,-21],[6,6],[-6,13],[7,-29],[-7,-29]].forEach(([x,z]) => {
-    const trunk = new THREE.Mesh(new THREE.CylinderGeometry(.15,.19,1.3,6),
-      new THREE.MeshLambertMaterial({color:0x7a5c3c}));
-    trunk.position.set(x,.65,z); scene.add(trunk);
-    const leaves = new THREE.Mesh(new THREE.SphereGeometry(1.1,7,7),
-      new THREE.MeshLambertMaterial({color:0x2d8a2d}));
-    leaves.position.set(x,2.3,z); scene.add(leaves);
+  [[6,-5],[6,-15],[-6,-8],[-6,-20],[6,5],[-6,12],[7,-28],[-7,-28]].forEach(([x,z])=>{
+    const trunk=new THREE.Mesh(new THREE.CylinderGeometry(.15,.18,1.2,6),new THREE.MeshLambertMaterial({color:0x7a5c3c}));
+    trunk.position.set(x,.6,z);scene.add(trunk);
+    const leaves=new THREE.Mesh(new THREE.SphereGeometry(1,7,7),new THREE.MeshLambertMaterial({color:0x2d8a2d}));
+    leaves.position.set(x,2.2,z);scene.add(leaves);
   });
-
   // Cars
-  [{x:3,z:-7,c:0xcc3333},{x:-3,z:-17,c:0x4455cc},
-   {x:3,z:-27,c:0x22aa44},{x:-3,z:-38,c:0xdd8800},
-   {x:3,z:11,c:0x9933aa},{x:-3,z:22,c:0x33aacc}].forEach(d => {
-    const g = new THREE.Group();
-    const body = new THREE.Mesh(new THREE.BoxGeometry(2.3,.7,1.15),
-      new THREE.MeshLambertMaterial({color:d.c}));
-    body.position.y = .48; body.castShadow = true; g.add(body);
-    const roof = new THREE.Mesh(new THREE.BoxGeometry(1.4,.52,.98),
-      new THREE.MeshLambertMaterial({color:d.c}));
-    roof.position.y = 1.08; g.add(roof);
-    [[-0.77,-0.46],[0.77,-0.46],[-0.77,0.46],[0.77,0.46]].forEach(([wx,wz]) => {
-      const w = new THREE.Mesh(new THREE.CylinderGeometry(.23,.23,.18,8),
-        new THREE.MeshLambertMaterial({color:0x111111}));
-      w.rotation.z = Math.PI/2; w.position.set(wx,.26,wz); g.add(w);
+  [{x:3,z:-6,c:0xcc3333},{x:-3,z:-16,c:0x4455cc},{x:3,z:-26,c:0x22aa44},
+   {x:-3,z:-36,c:0xdd8800},{x:3,z:10,c:0x9933aa},{x:-3,z:20,c:0x33aacc}].forEach(d=>{
+    const g=new THREE.Group();
+    const body=new THREE.Mesh(new THREE.BoxGeometry(2.2,.65,1.1),new THREE.MeshLambertMaterial({color:d.c}));
+    body.position.y=.45;body.castShadow=true;g.add(body);
+    const roof=new THREE.Mesh(new THREE.BoxGeometry(1.4,.5,.95),new THREE.MeshLambertMaterial({color:d.c}));
+    roof.position.y=1.05;g.add(roof);
+    [[-0.75,-0.45],[0.75,-0.45],[-0.75,0.45],[0.75,0.45]].forEach(([wx,wz])=>{
+      const w=new THREE.Mesh(new THREE.CylinderGeometry(.22,.22,.18,8),new THREE.MeshLambertMaterial({color:0x111111}));
+      w.rotation.z=Math.PI/2;w.position.set(wx,.25,wz);g.add(w);
     });
-    g.position.set(d.x,.02,d.z); scene.add(g);
+    g.position.set(d.x,.02,d.z);scene.add(g);
   });
 }
 
-function addSign(x, y, z, text, color) {
-  const cv = document.createElement('canvas');
-  cv.width = 256; cv.height = 72;
-  const cx = cv.getContext('2d');
-  cx.fillStyle = '#' + color.toString(16).padStart(6,'0');
-  cx.fillRect(0,0,256,72);
-  cx.fillStyle = '#fff'; cx.font = 'bold 26px Arial';
-  cx.textAlign = 'center'; cx.textBaseline = 'middle';
-  cx.fillText(text, 128, 36);
-  const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(2.5,.7),
-    new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(cv), transparent:true})
-  );
-  plane.position.set(x, y, z);
-  scene.add(plane);
-}
-
-// ════════════════════════════════════════════
-//  START GAME
-// ════════════════════════════════════════════
-function startGame(sv) {
-  saveon = sv;
-  go('s-game');
-  document.getElementById('hud-sv').textContent = sv ? '💾 Auto-save ON' : '';
-
-  const tipEl = document.getElementById('hud-tip');
-  const touchEl = document.getElementById('touch-ctrl');
-  if (ctrl === 'mobile') {
-    tipEl.classList.add('gone');
-    touchEl.classList.remove('gone');
-    initTouch();
-  } else {
-    tipEl.classList.remove('gone');
-    tipEl.innerHTML = CTRL_TIPS[ctrl] || CTRL_TIPS.pc;
-    tipEl.style.cssText = 'position:absolute;bottom:14px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.6);padding:6px 18px;border-radius:20px;color:#aaa;font-size:11px;white-space:nowrap';
-    touchEl.classList.add('gone');
-  }
-
-  if (!started) { initGame(); started = true; }
-  showMsg(sv ? '💾 Salvamento ativado!' : '▶ Sem salvamento — boa sorte!');
-}
-
-// ════════════════════════════════════════════
-//  INIT GAME
-// ════════════════════════════════════════════
-let loaded = 0;
-function setLoadPct(p) { document.getElementById('loading-bar').style.width = p+'%'; }
-function setLoadTxt(t) { document.getElementById('loading-txt').textContent = t; }
-
-function initGame() {
-  clock = new THREE.Clock();
-  document.getElementById('loading-screen').classList.remove('gone');
-
-  const el = document.getElementById('gc3d');
-  const W = window.innerWidth, H = window.innerHeight;
-
-  ren = new THREE.WebGLRenderer({canvas:el, antialias:true});
-  ren.setPixelRatio(Math.min(devicePixelRatio, 2));
-  ren.setSize(W, H);
-  ren.shadowMap.enabled = true;
-  ren.shadowMap.type = THREE.PCFSoftShadowMap;
-
-  scene = new THREE.Scene();
-  scene.background = new THREE.Color(0x87CEEB);
-  scene.fog = new THREE.FogExp2(0x87CEEB, .012);
-
-  cam = new THREE.PerspectiveCamera(65, W/H, .1, 250);
-  cam.position.set(0, 8, 14);
-
-  scene.add(new THREE.AmbientLight(0xffffff, .55));
-  const sun = new THREE.DirectionalLight(0xfff8e7, 1.1);
-  sun.position.set(30, 60, 20);
-  sun.castShadow = true;
-  sun.shadow.mapSize.set(1024, 1024);
-  sun.shadow.camera.far = 150;
-  sun.shadow.camera.left = sun.shadow.camera.bottom = -70;
-  sun.shadow.camera.right = sun.shadow.camera.top = 70;
-  scene.add(sun);
-
-  buildWorld();
-  setLoadPct(20); setLoadTxt('Mundo criado...');
-
-  // Spawn groups
-  chars.player.group = new THREE.Group(); scene.add(chars.player.group);
-  chars.player.group.position.set(0,0,0);
-  chars.ally.group = new THREE.Group(); scene.add(chars.ally.group);
-  chars.ally.group.position.set(2.5,0,1);
-  chars.enemy.group = new THREE.Group(); scene.add(chars.enemy.group);
-  chars.enemy.group.position.set(0,0,-28);
-
-  addLabel(chars.player.group, 'Badres Gamer', 0x2288ff);
-  addLabel(chars.ally.group,   'Davi',         0x22cc66);
-  addLabel(chars.enemy.group,  'Badres Prime', 0xee2222);
-
-  // Load VRMs
-  let total = 3, done = 0;
-  function onDone() {
-    done++;
-    setLoadPct(20 + done*25);
-    if (done === total) {
-      setLoadTxt('Pronto!');
-      setTimeout(() => {
-        document.getElementById('loading-screen').classList.add('gone');
-        showMsg('🎮 Bem-vindo ao Badres Prime: O Jogo!');
-        gameLoop();
-      }, 400);
-    }
-  }
-
-  function spawnChar(key, url, color, type) {
-    setLoadTxt(`Carregando ${key}...`);
-    loadVRM(url,
-      vrm => {
-        chars[key].vrm = vrm;
-        chars[key].bones = getBones(vrm);
-        vrm.scene.castShadow = true;
-        chars[key].group.add(vrm.scene);
-        onDone();
-      },
-      () => {
-        chars[key].group.add(makeFallback(color, type));
-        onDone();
-      }
-    );
-  }
-
-  spawnChar('player', VRM_URLS.player, 0x2288ff, 'p');
-  spawnChar('ally',   VRM_URLS.ally,   0x22cc66, 'a');
-  spawnChar('enemy',  VRM_URLS.enemy,  0xee2222, 'e');
-
-  // Keyboard
-  document.addEventListener('keydown', e => {
-    keys[e.code] = true;
-    if (e.code === 'Escape') { cancelAnimationFrame(animReq); go('s-menu'); }
-    if (e.code === 'KeyJ') doAttack();
-    if (e.code === 'KeyE') doEat();
-    if (e.code === 'KeyG') doGym();
-  });
-  document.addEventListener('keyup', e => keys[e.code] = false);
-  window.addEventListener('resize', onResize);
-}
-
-// ════════════════════════════════════════════
-//  ACTIONS
-// ════════════════════════════════════════════
-let actionTimer = 0;
-function doAttack() {
-  if (ps.state === 'idle' || ps.state === 'walk') {
-    ps.state = 'attack'; actionTimer = 0;
-    showMsg('⚔️ Atacando!');
-  }
-}
-function doEat() {
-  if (ps.hunger < 20) { showMsg('Sem hambúrguer!'); return; }
-  ps.state = 'eat'; actionTimer = 0;
-  ps.hunger = Math.max(0, ps.hunger - 20);
-  ps.hp = Math.min(100, ps.hp + 15);
-  showMsg('🍔 +15 HP!');
-  setTimeout(() => { if (ps.state === 'eat') ps.state = 'idle'; }, 2000);
-}
-function doGym() {
-  if (ps.hunger > 80) { showMsg('Muito cheio para malhar!'); return; }
-  ps.state = 'gym'; actionTimer = 0;
-  showMsg('🏋️ Malhando! +Força');
-  setTimeout(() => {
-    if (ps.state === 'gym') {
-      ps.str = Math.min(100, ps.str + 5);
-      ps.state = 'idle';
-    }
-  }, 3000);
-}
-
-// ════════════════════════════════════════════
-//  GAME LOOP
-// ════════════════════════════════════════════
-let gameT = 0;
-function gameLoop() {
-  animReq = requestAnimationFrame(gameLoop);
-  const dt = Math.min(clock.getDelta(), .05);
-  gameT += dt;
-  actionTimer += dt;
-
-  const spd = 4 + ps.str * .04;
-  const pg = chars.player.group;
-  const ag = chars.ally.group;
-  const eg = chars.enemy.group;
+// ── GAME LOOP ─────────────────────────────────────
+let bobT=0,htimer=0,vrmClock=new THREE.Clock();
+function gameLoop(){
+  animReq=requestAnimationFrame(gameLoop);
+  const dt=Math.min(clock.getDelta(),.05);
+  bobT+=dt;
 
   // ── Input ──
-  const dir = new THREE.Vector3();
-  if (ctrl === 'mobile' && joystickActive) { dir.x = joyX; dir.z = joyY; }
-  else {
-    if (keys['KeyW'] || keys['ArrowUp'])    dir.z -= 1;
-    if (keys['KeyS'] || keys['ArrowDown'])  dir.z += 1;
-    if (keys['KeyA'] || keys['ArrowLeft'])  dir.x -= 1;
-    if (keys['KeyD'] || keys['ArrowRight']) dir.x += 1;
+  const spd=5+(ps.str*.04);
+  const dir=new THREE.Vector3();
+  if(ctrl==='mobile'&&joystickActive){
+    dir.x=joyX;dir.z=joyY;
+  } else {
+    if(keys['KeyW']||keys['ArrowUp'])dir.z-=1;
+    if(keys['KeyS']||keys['ArrowDown'])dir.z+=1;
+    if(keys['KeyA']||keys['ArrowLeft'])dir.x-=1;
+    if(keys['KeyD']||keys['ArrowRight'])dir.x+=1;
   }
-  const moving = dir.length() > .05;
 
-  // ── Player movement ──
-  if (moving && ps.state !== 'attack' && ps.state !== 'gym' && ps.state !== 'eat') {
+  const pg=playerObj.group;
+  if(dir.length()>.05){
     dir.normalize();
-    pg.position.x += dir.x * spd * dt;
-    pg.position.z += dir.z * spd * dt;
-    pg.rotation.y  = Math.atan2(dir.x, dir.z);
-    if (ps.state !== 'walk') ps.state = 'walk';
-    ps.hunger = Math.min(100, ps.hunger + .4 * dt);
-  } else {
-    if (ps.state === 'walk') ps.state = 'idle';
+    pg.position.x+=dir.x*spd*dt;
+    pg.position.z+=dir.z*spd*dt;
+    pg.rotation.y=Math.atan2(dir.x,dir.z);
+    htimer+=dt;
+    if(htimer>3){htimer=0;ps.hunger=Math.min(100,ps.hunger+1);}
+  }
+  pg.position.x=Math.max(-14,Math.min(14,pg.position.x));
+  pg.position.z=Math.max(-50,Math.min(15,pg.position.z));
+
+  // ── Ally follows ──
+  const ag=allyObj.group;
+  const toP=new THREE.Vector3().subVectors(pg.position,ag.position);
+  if(toP.length()>2.5){toP.normalize();ag.position.x+=toP.x*3*dt;ag.position.z+=toP.z*3*dt;ag.rotation.y=Math.atan2(toP.x,toP.z);}
+
+  // ── Enemy chases ──
+  const eg=enemyObj.group;
+  const toE=new THREE.Vector3().subVectors(pg.position,eg.position);
+  const eDist=toE.length();
+  if(eDist>4){toE.normalize();eg.position.x+=toE.x*2.5*dt;eg.position.z+=toE.z*2.5*dt;eg.rotation.y=Math.atan2(toE.x,toE.z);}
+  else{
+    ps.hp=Math.max(0,ps.hp-8*dt);
+    es.hp=Math.max(0,es.hp-3*dt);
+    if(ps.hp<=0){ps.hp=100;es.hp=100;pg.position.set(0,0,5);showMsg('💀 VOCÊ MORREU!\nRespawnando...');}
+    if(es.hp<=0){es.hp=100;eg.position.set(0,0,-28);showMsg('🏆 BADRES PRIME DERROTADO!\nO YouTube está salvo!');ps.str=Math.min(100,ps.str+10);}
   }
 
-  // Cancel attack after 1.2s
-  if (ps.state === 'attack' && actionTimer > 1.2) ps.state = 'idle';
+  // ── VRM updates ──
+  const vdt=vrmClock.getDelta();
+  [playerObj,allyObj,enemyObj].forEach(o=>{if(o.vrm)o.vrm.update(vdt);});
 
-  pg.position.x = Math.max(-16, Math.min(16, pg.position.x));
-  pg.position.z = Math.max(-55, Math.min(16, pg.position.z));
-
-  // Fat body scale
-  const fatScale = ps.hunger > 70 ? 1 + (ps.hunger-70)/90 : 1;
-  pg.scale.x = pg.scale.z = fatScale;
-
-  // ── Ally AI ──
-  const toP = new THREE.Vector3().subVectors(pg.position, ag.position);
-  const allyMoving = toP.length() > 2.5;
-  if (allyMoving) {
-    toP.normalize();
-    ag.position.x += toP.x * 3 * dt;
-    ag.position.z += toP.z * 3 * dt;
-    ag.rotation.y = Math.atan2(toP.x, toP.z);
-  }
-
-  // ── Enemy AI ──
-  const toE = new THREE.Vector3().subVectors(pg.position, eg.position);
-  const eDist = toE.length();
-  let enemyAttacking = false;
-  if (eDist > 3.5) {
-    toE.normalize();
-    const espd = es.phase === 2 ? 3.5 : 2.5;
-    eg.position.x += toE.x * espd * dt;
-    eg.position.z += toE.z * espd * dt;
-    eg.rotation.y = Math.atan2(toE.x, toE.z);
-  } else {
-    enemyAttacking = true;
-    const dmg = es.phase === 2 ? 12 : 8;
-    ps.hp = Math.max(0, ps.hp - dmg * dt);
-    // Ally helps
-    es.hp = Math.max(0, es.hp - 2.5 * dt);
-    // Counter if attacking
-    if (ps.state === 'attack') es.hp = Math.max(0, es.hp - 8 * dt);
-  }
-
-  // Phase 2
-  if (es.hp < 50 && es.phase === 1) {
-    es.phase = 2;
-    showMsg('😈 BADRES PRIME FICOU MAIS FORTE!');
-    eg.scale.setScalar(1.15);
-  }
-
-  if (ps.hp <= 0) {
-    ps.hp = 100; es.hp = 100; es.phase = 1;
-    pg.position.set(0,0,5); eg.position.set(0,0,-28);
-    eg.scale.setScalar(1);
-    showMsg('💀 VOCÊ MORREU!\nRespawnando...');
-    ps.state = 'die';
-    setTimeout(() => ps.state = 'idle', 2000);
-  }
-
-  if (es.hp <= 0) {
-    es.hp = 100; es.phase = 1;
-    eg.position.set(0,0,-28);
-    eg.scale.setScalar(1);
-    ps.str = Math.min(100, ps.str + 10);
-    showMsg('🏆 BADRES PRIME DERROTADO!\n🌐 O YouTube está salvo!');
-  }
-
-  // ── Bone Animations ──
-  const pb = chars.player.bones;
-  const ab = chars.ally.bones;
-  const eb = chars.enemy.bones;
-
-  if (pb) animateBones(pb, ps.state, gameT, ps.hunger);
-  if (ab) animateBones(ab, allyMoving ? 'walk' : 'idle', gameT+1, 0);
-  if (eb) animateBones(eb, enemyAttacking ? 'enemy_attack' : (eDist < 8 ? 'enemy_attack' : 'walk'), gameT+2, 0);
-
-  // Fallback bob (no VRM)
-  if (!chars.player.bones) {
-    const h = chars.player.group.children.find(c => c.geometry?.type==='SphereGeometry');
-    if (h) h.position.y = 1.9 + Math.sin(gameT*2)*.04;
-  }
-
-  // Update VRM
-  ['player','ally','enemy'].forEach(k => { if (chars[k].vrm) chars[k].vrm.update(dt); });
-
-  // ── Label billboarding ──
-  [pg, ag, eg].forEach(g => {
-    const lbl = g.children.find(c => c.geometry?.type==='PlaneGeometry');
-    if (lbl) lbl.lookAt(cam.position);
+  // ── Fallback bob ──
+  [pg,ag,eg].forEach(g=>{
+    const head=g.children.find(c=>c.geometry?.type==='SphereGeometry');
+    if(head)head.position.y=1.9+Math.sin(bobT*1.5+g.position.x)*.025;
   });
 
-  // ── Camera follow ──
-  cam.position.x += (pg.position.x - cam.position.x) * 5 * dt;
-  cam.position.z += (pg.position.z + 12 - cam.position.z) * 5 * dt;
-  cam.position.y = 8;
-  cam.lookAt(pg.position.x, 1.5, pg.position.z);
+  // ── Label billboarding ──
+  [pg,ag,eg].forEach(g=>{
+    const lbl=g.children.find(c=>c.geometry?.type==='PlaneGeometry');
+    if(lbl)lbl.lookAt(cam.position);
+  });
+
+  // ── Camera ──
+  cam.position.x+=(pg.position.x-cam.position.x)*6*dt;
+  cam.position.z+=(pg.position.z+12-cam.position.z)*6*dt;
+  cam.position.y=8;
+  cam.lookAt(pg.position.x,1.5,pg.position.z);
 
   // ── HUD ──
-  const h = n => Math.round(n);
-  document.getElementById('hud-hp').textContent  = h(ps.hp);
-  document.getElementById('hud-str').textContent = h(ps.str);
-  document.getElementById('hud-hgr').textContent = h(ps.hunger);
-  document.getElementById('hud-ehp').textContent = h(es.hp);
-  document.getElementById('hud-ahp').textContent = h(as.hp);
-  document.getElementById('bar-hp').style.width  = ps.hp+'%';
-  document.getElementById('bar-str').style.width = ps.str+'%';
-  document.getElementById('bar-hgr').style.width = ps.hunger+'%';
-  document.getElementById('bar-ehp').style.width = es.hp+'%';
-  const stateNames = {idle:'🧍 Parado',walk:'🚶 Andando',attack:'⚔️ Atacando',gym:'🏋️ Malhando',eat:'🍔 Comendo',die:'💀 Morreu'};
-  document.getElementById('hud-state').innerHTML = (stateNames[ps.state]||'') + (es.phase===2 ? '<br><span style="color:#ff4444">⚠️ Fase 2!</span>' : '') + (ps.hunger>80 ? '<br><span style="color:#ffaa00">😵 Muito gordo!</span>' : '');
+  document.getElementById('hud-hp').textContent=Math.round(ps.hp);
+  document.getElementById('hud-str').textContent=Math.round(ps.str);
+  document.getElementById('hud-hgr').textContent=Math.round(ps.hunger);
+  document.getElementById('hud-ehp').textContent=Math.round(es.hp);
 
-  // Auto-save
-  if (saveon && Math.round(gameT) % 30 === 0) {
-    localStorage.setItem('badres_save', JSON.stringify({hp:ps.hp,str:ps.str,hunger:ps.hunger,px:pg.position.x,pz:pg.position.z}));
-  }
-
-  ren.render(scene, cam);
+  ren.render(scene,cam);
 }
 
-function showMsg(txt) {
-  const el = document.getElementById('hud-msg');
-  el.innerHTML = txt.replace('\n','<br>');
-  el.style.opacity = '1';
-  setTimeout(() => el.style.opacity = '0', 3500);
+function showMsg(txt){
+  const el=document.getElementById('hud-msg');
+  el.innerHTML=txt.replace('\n','<br>');
+  el.style.opacity='1';
+  setTimeout(()=>el.style.opacity='0',3500);
 }
-
-function onResize() {
-  if (!ren) return;
-  ren.setSize(window.innerWidth, window.innerHeight);
-  cam.aspect = window.innerWidth / window.innerHeight;
+function onResize(){
+  const c=document.getElementById('s-game');
+  if(!ren)return;
+  ren.setSize(c.offsetWidth,c.offsetHeight);
+  cam.aspect=c.offsetWidth/c.offsetHeight;
   cam.updateProjectionMatrix();
 }
 </script>
-</body>
-</html>
+</body></html>
